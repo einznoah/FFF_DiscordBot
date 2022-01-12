@@ -34,8 +34,16 @@ client.on('messageDelete', async msgDelete => {
 });
 
 client.on('messageDeleteBulk', async messages => {
+    let pasteStr;
+    messages.forEach(message => {
+        const message_content = message.content;
+        const message_author = message.author.username + '#' + message.author.discriminator;
+        const time = message.createdTimestamp;
+        const line = '\n' + message_content.toString() + ' | ' + message_author.toString() + ' | ' + time + '\n';
+        pasteStr += line
+    })
     const url = await PastebinClient.createPaste({
-        code: messages.toJSON().toString(),
+        code: pasteStr,
         expireDate: '1H',
         format: 'json',
         name: 'Purged messages ' + Date.now().toString(),
