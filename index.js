@@ -1,9 +1,9 @@
 const { Client, Intents, MessageEmbed } = require('discord.js');
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
-const {token, log_channel_id} = require('./config.json');
+const {token, log_channel_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
 
-const PastebinClient = new PasteClient('RIc7ylSrUuzMX2Cc0A437NHDxRXEM1k5')
+const PastebinClient = new PasteClient(PASTEBIN_API_KEY)
 let log_channel;
 
 client.on('ready', () => {
@@ -35,7 +35,7 @@ client.on('messageDelete', async msgDelete => {
 
 client.on('messageDeleteBulk', async messages => {
     const url = await PastebinClient.createPaste({
-        code: messages.toJSON(),
+        code: messages.toJSON().toString(),
         expireDate: '1H',
         format: 'json',
         name: 'Purged messages ' + Date.now().toString(),
