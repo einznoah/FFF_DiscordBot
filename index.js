@@ -1,5 +1,5 @@
 const { Client, Intents, MessageEmbed} = require('discord.js');
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.DIRECT_MESSAGES]})
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]})
 const {token, log_channel_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
 const damn_counter = require('nconf');
@@ -20,6 +20,11 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.commandName === 'ping') {
         await interaction.reply('Pong!');
+    } else if (interaction.commandName === 'damncounter') {
+        const user = interaction.options.getUser('user');
+        console.log(user.username)
+        const counter = damn_counter.get('user:' + user.id);
+        await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
     }
 });
 
@@ -100,5 +105,11 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     }
 })
 
-
+client.on('messageCreate', async message => {
+    if (message.content.includes('damn')) {
+        const damn_counter_cache = damn_counter.get('user:' + message.author.id);
+        damn_counter.set('user:' + message.author.id, damn_counter_cache + 1)
+        damn_counter.save()
+    }
+})
 client.login(token).then();
