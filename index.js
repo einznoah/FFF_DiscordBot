@@ -1,15 +1,19 @@
-const { Client, Intents, MessageEmbed } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] });
+const { Client, Intents, MessageEmbed} = require('discord.js');
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.DIRECT_MESSAGES]})
 const {token, log_channel_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
-
-const PastebinClient = new PasteClient(PASTEBIN_API_KEY)
+const damn_counter = require('nconf');
+damn_counter.file({ file: './damn_counter.json'});
+const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
 let log_channel;
+let guild;
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     log_channel = client.channels.cache.find(channel => channel.id === log_channel_id);
-});
+    guild = client.guilds.cache.get('762943812464934923');
+    guild.members.fetch().then(() => console.log('Finished updating members!'))
+})
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
