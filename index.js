@@ -1,9 +1,9 @@
-const { Client, Intents, MessageEmbed} = require('discord.js');
+const {Client, Intents, MessageEmbed} = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES]})
-const {token, log_channel_id, PASTEBIN_API_KEY} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
 const damn_counter = require('nconf');
-damn_counter.file({ file: './damn_counter.json'});
+damn_counter.file({file: './damn_counter.json'});
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
 let log_channel;
 let guild;
@@ -11,7 +11,7 @@ let guild;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     log_channel = client.channels.cache.find(channel => channel.id === log_channel_id);
-    guild = client.guilds.cache.get('762943812464934923');
+    guild = client.guilds.cache.get(guild_id);
     guild.members.fetch().then(() => console.log('Finished updating members!'))
 })
 
@@ -86,7 +86,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldUsername !== newUsername) {
         const embed = new MessageEmbed()
             .setColor('#ffa000')
-            .setDescription('**<@' + newMember.user.id + '> nickname changed\nBefore**\n' + oldUsername +'\n**After**\n' + newUsername)
+            .setDescription('**<@' + newMember.user.id + '> nickname changed\nBefore**\n' + oldUsername + '\n**After**\n' + newUsername)
             .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
             .setTimestamp()
             .setFooter({text: 'ID: ' + author.id})
