@@ -60,7 +60,7 @@ client.on('messageDeleteBulk', async messages => {
     })
     const embed = new MessageEmbed()
         .setColor('#ff0000')
-        .setDescription('**Messages purged in <#' + messages.first().channel.id + '>**\n[Read messages here](' + url.toString() + ')\nWill get deleted after 60 minutes!')
+        .setDescription('**Messages purged in <#' + messages.first().channel.id + '>**\n[Read messages here](' + url.toString() + ')\nWill get deleted after 1 Day!')
         .setTimestamp()
     log_channel.send({embeds: [embed]});
 })
