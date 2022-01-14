@@ -68,6 +68,7 @@ client.on('messageDeleteBulk', async messages => {
 client.on('messageUpdate', async (oldMsg, newMsg) => {
     const oldContent = oldMsg.content;
     const newContent = newMsg.content;
+    if (oldContent === newContent) return;
     const channel = newMsg.channel;
     const author = newMsg.author;
     const embed = new MessageEmbed()
