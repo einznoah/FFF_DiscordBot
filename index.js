@@ -106,7 +106,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 })
 
 client.on('messageCreate', async message => {
-    if (message.content.includes('damn')) {
+    if (message.content.toLowerCase().includes('damn')) {
         const damn_counter_cache = damn_counter.get('user:' + message.author.id);
         damn_counter.set('user:' + message.author.id, damn_counter_cache + 1)
         damn_counter.save()
