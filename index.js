@@ -53,7 +53,7 @@ client.on('messageDeleteBulk', async messages => {
     })
     const url = await PastebinClient.createPaste({
         code: pasteStr,
-        expireDate: '1H',
+        expireDate: '1D',
         format: 'json',
         name: 'Purged messages ' + Date.now().toString(),
         publicity: 1
