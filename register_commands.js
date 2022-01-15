@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const {token, CLIENT_ID} = require('./config.json')
+const {token, CLIENT_ID, guild_id} = require('./config.json')
 
 // const data = new SlashCommandBuilder()
 //    .setName('gif')
@@ -32,6 +32,6 @@ const commands = [pingCommand, globalupdate, damnsCommand];
 
 const rest = new REST({ version: '9' }).setToken(token);
 
-rest.put(Routes.applicationGuildCommands(CLIENT_ID, '762943812464934923'), { body: commands })
+rest.put(Routes.applicationGuildCommands(CLIENT_ID, guild_id), { body: commands })
     .then(() => console.log('Successfully registered application commands.'))
     .catch(console.error);
