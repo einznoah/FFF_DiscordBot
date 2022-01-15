@@ -97,6 +97,8 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
 
 // members
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
+    if (oldMember === null) return;
+    if (oldMember  === undefined) return;
     const oldUsername = oldMember.nickname.toString();
     const newUsername = newMember.nickname.toString();
     const author = newMember.user;
