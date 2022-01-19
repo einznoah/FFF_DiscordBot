@@ -1,0 +1,7 @@
+{
+  "token": "YOUR_DISCORD_BOT_TOKEN",
+  "CLIENT_ID": "YOUR_DISCORD_BOT_CLIENT_ID",
+  "log_channel_id":"YOUR_LOG_CHANNEL_ID",
+  "guild_id": "YOUR_GUILD_ID",
+  "PASTEBIN_API_KEY": "YOUR_PASTEBIN_API_KEY"
+}
