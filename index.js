@@ -118,7 +118,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
             .setTimestamp()
             .setFooter({text: 'ID: ' + author.id})
-            .setImage(newMember.displayAvatarURL())
             .setThumbnail(newMember.displayAvatarURL())
         log_channel.send({embeds: [embed]});
     }
