@@ -51,12 +51,13 @@ client.on('interactionCreate', async interaction => {
         });
         const top_5 = items.slice(0, 5);
         let msg = '';
-        let i = 0;
+        let i1 = 0;
         await top_5.forEach(value => {
-            i++;
             interaction.guild.members.fetch(value[0])
                 .then(value1 => {
-                    const line = i.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
+                    i1++;
+                    if (damn_counter.get('user:' + value1.user.id).toString() === '0') return
+                    const line = i1.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
                     msg += line + '\n';
                 })
                 .catch(() => {
