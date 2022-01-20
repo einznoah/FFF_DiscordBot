@@ -24,11 +24,11 @@ const damnsCommand = new SlashCommandBuilder()
 
 damnsCommand.addUserOption((option) => option.setName('user').setDescription('The user to check').setRequired(true));
 
-const globalupdate = new SlashCommandBuilder()
-    .setName('globalupdate')
-    .setDescription('Initiates a global update')
+const damnLeaderboard = new SlashCommandBuilder()
+    .setName('topdamn')
+    .setDescription('See who said damn the most')
 
-const commands = [pingCommand, globalupdate, damnsCommand];
+const commands = [pingCommand, damnLeaderboard, damnsCommand];
 
 const rest = new REST({ version: '9' }).setToken(token);
 
