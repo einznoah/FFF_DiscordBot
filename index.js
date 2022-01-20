@@ -28,8 +28,42 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply('Pong!');
     } else if (interaction.commandName === 'damncounter') {
         const user = interaction.options.getUser('user');
+        damn_counter.load();
         const counter = damn_counter.get('user:' + user.id);
-        await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
+        if (counter !== undefined) {
+            await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
+        } else {
+            await interaction.reply(user.username + " hasn't said damn yet!")
+        }
+
+    } else if (interaction.commandName === 'topdamn') {
+        damn_counter.load();
+        const users = JSON.stringify(damn_counter.get('user'))
+        let user_dict = {};
+        for (let user in JSON.parse(users)) {
+            user_dict[user] = damn_counter.get('user:' + user);
+        }
+        let items = Object.keys(user_dict).map(function(key) {
+            return [key, user_dict[key]]
+        });
+        items.sort(function (first, second) {
+            return second[1] - first[1];
+        });
+        const top_5 = items.slice(0, 5);
+        let msg = '';
+        let i = 0;
+        await top_5.forEach(value => {
+            i++;
+            interaction.guild.members.fetch(value[0])
+                .then(value1 => {
+                    const line = i.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
+                    msg += line + '\n';
+                })
+                .catch(() => {
+                    msg = 'An error occurred, please contact the bot developer! '
+                })
+        })
+        await interaction.reply(msg)
     }
 });
 
@@ -37,7 +71,12 @@ client.on('interactionCreate', async interaction => {
 // messages
 client.on('messageCreate', async message => {
     if (message.content.toLowerCase().includes('damn')) {
-        const damn_counter_cache = damn_counter.get('user:' + message.author.id);
+        if (message.author.bot) return;
+        damn_counter.load();
+        let damn_counter_cache = damn_counter.get('user:' + message.author.id);
+        if (damn_counter_cache === null || damn_counter_cache === undefined) {
+            damn_counter_cache = 0;
+        }
         damn_counter.set('user:' + message.author.id, damn_counter_cache + 1)
         damn_counter.save()
     }
@@ -192,12 +231,10 @@ client.on('guildMemberAdd', async member => {
 // invites
 client.on('inviteCreate', async invite => {
     invites.get(invite.guild.id).set(invite.code, invite.uses);
-    console.log('Added invite ' + invite.code);
 })
 
 client.on('inviteDelete', async invite => {
     invites.get(invite.guild.id).delete(invite.code);
-    console.log('Removed invite ' + invite.code);
 })
 
 client.login(token).then();
