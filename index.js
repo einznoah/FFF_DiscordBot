@@ -55,6 +55,33 @@ client.on('messageDelete', async msgDelete => {
         .setTimestamp()
         .setFooter({text: 'Author: ' + author.id + ' | Message ID: ' + msgDelete.id});
     log_channel.send({embeds: [embed]});
+    if (msgDelete.attachments.first() !== undefined) {
+        const attachments = msgDelete.attachments;
+        let attachment_msg = "Error occurred, please contact bot developer!";
+        if (attachments.size === 1) {
+            attachment_msg = attachments.first().url;
+            const embed = new MessageEmbed()
+                .setColor('#ff0000')
+                .setDescription('**Attachment sent by <@' + author.id + '> deleted in <#' + channel.id + '>** \n ' + attachment_msg)
+                .setImage(attachments.first().url)
+                .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
+                .setTimestamp()
+                .setFooter({text: 'Author: ' + author.id + ' | Message ID: ' + msgDelete.id});
+            log_channel.send({embeds: [embed]});
+        } else {
+            attachment_msg = '';
+            attachments.each(attachment => {
+                attachment_msg += attachment.url + '\n';
+            })
+            const embed = new MessageEmbed()
+                .setColor('#ff0000')
+                .setDescription('**Attachments sent by <@' + author.id + '> deleted in <#' + channel.id + '>** \n ' + attachment_msg)
+                .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
+                .setTimestamp()
+                .setFooter({text: 'Author: ' + author.id + ' | Message ID: ' + msgDelete.id});
+            log_channel.send({embeds: [embed]});
+        }
+    }
 });
 
 client.on('messageDeleteBulk', async messages => {
