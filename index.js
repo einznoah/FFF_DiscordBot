@@ -60,8 +60,9 @@ client.on('interactionCreate', async interaction => {
                     const line = i1.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
                     msg += line + '\n';
                 })
-                .catch(() => {
+                .catch((err) => {
                     msg = 'An error occurred, please contact the bot developer! '
+                    console.log(err)
                 })
         })
         await interaction.reply(msg)
