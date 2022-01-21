@@ -43,7 +43,7 @@ client.on('interactionCreate', async interaction => {
         for (let user in JSON.parse(users)) {
             user_dict[user] = damn_counter.get('user:' + user);
         }
-        let items = Object.keys(user_dict).map(function(key) {
+        let items = Object.keys(user_dict).map(function (key) {
             return [key, user_dict[key]]
         });
         items.sort(function (first, second) {
@@ -166,9 +166,9 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
 // members
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldMember === null) return;
-    if (oldMember  === undefined) return;
-    const oldUsername = oldMember.nickname.toString();
-    const newUsername = newMember.nickname.toString();
+    if (oldMember === undefined) return;
+    const oldUsername = oldMember.nickname;
+    const newUsername = newMember.nickname;
     const author = newMember.user;
     if (oldUsername !== newUsername) {
         const embed = new MessageEmbed()
@@ -188,6 +188,55 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             .setFooter({text: 'ID: ' + author.id})
             .setThumbnail(newMember.displayAvatarURL())
         log_channel.send({embeds: [embed]});
+    }
+    if (oldMember.roles !== newMember.roles) {
+        const old_roles = oldMember.roles.cache;
+        const new_roles = newMember.roles.cache;
+        let old_roles_ids = [];
+        let new_roles_ids = [];
+        old_roles.each(role => {
+            old_roles_ids.push(role.id)
+        });
+        new_roles.each(role => {
+            new_roles_ids.push(role.id);
+        });
+        if (new_roles_ids.length > old_roles_ids.length) {
+            function findAddedRole(id) {
+                for (let i = 0; i < old_roles_ids.length; i++) {
+                    if (id === old_roles_ids[i]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            const addedRole = new_roles_ids.filter(findAddedRole);
+            const addedRoleID = addedRole[0];
+            const embed = new MessageEmbed()
+                .setColor('#90ee90')
+                .setDescription('<@' + author.id + '> **was given the <@&' + addedRoleID + '> role**')
+                .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
+                .setTimestamp()
+                .setFooter({text: 'ID: ' + author.id})
+            log_channel.send({embeds: [embed]});
+        } else if (old_roles_ids > new_roles_ids) {
+            function findRemovedRole(id) {
+                for (let i = 0; i < new_roles_ids; i++) {
+                    if (id === new_roles_ids[i]) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            const removedRole = old_roles_ids.filter(findRemovedRole);
+            const removedRoleID = removedRole[0];
+            const embed = new MessageEmbed()
+                .setColor('#ff0000')
+                .setDescription('<@' + author.id + '> **was removed from the <@&' + removedRoleID + '> role**')
+                .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
+                .setTimestamp()
+                .setFooter({text: 'ID: ' + author.id})
+            log_channel.send({embeds: [embed]});
+        }
     }
 })
 
