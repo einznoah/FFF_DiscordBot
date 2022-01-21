@@ -1,5 +1,5 @@
 const {Client, Intents, MessageEmbed} = require('discord.js');
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES]})
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS]})
 const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
 const damn_counter = require('nconf');
@@ -276,6 +276,30 @@ client.on('guildMemberAdd', async member => {
             .setImage(avatar)
             .setAuthor({name: 'Member joined', iconURL: avatar})
     }
+    log_channel.send({embeds: [embed]});
+})
+
+client.on('guildBanAdd', async ban => {
+    const user = ban.user;
+    const embed = new MessageEmbed()
+        .setColor('#ff0000')
+        .setDescription('<@' + user.id + '> ' + user.username + '#' + user.discriminator)
+        .setTimestamp()
+        .setAuthor({name: 'Member Banned', iconURL: user.avatarURL()})
+        .setFooter({text: 'ID: ' + user.id})
+        .setThumbnail(user.avatarURL())
+    log_channel.send({embeds: [embed]});
+})
+
+client.on('guildBanRemove', async unban => {
+    const user = unban.user;
+    const embed = new MessageEmbed()
+        .setColor('#90ee90')
+        .setDescription('<@' + user.id + '> ' + user.username + '#' + user.discriminator)
+        .setTimestamp()
+        .setAuthor({name: 'Member Unbanned', iconURL: user.avatarURL()})
+        .setFooter({text: 'ID: ' + user.id})
+        .setThumbnail(user.avatarURL())
     log_channel.send({embeds: [embed]});
 })
 
