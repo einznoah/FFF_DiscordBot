@@ -352,6 +352,45 @@ client.on('roleUpdate', async (oldRole, newRole) => {
     }
 })
 
+// channels
+client.on('channelCreate', async channel => {
+    const embed = new MessageEmbed()
+        .setColor('#90ee90')
+        .setDescription('**Channel Created: #' + channel.name + '**')
+        .setTimestamp()
+        .setAuthor({name: channel.guild.name})
+        .setFooter({text: 'ID: ' + channel.id})
+    log_channel.send({embeds: [embed]})
+})
+
+client.on('channelDelete', async channel => {
+    if (channel.guild !== undefined) {
+        const embed = new MessageEmbed()
+            .setColor('#ff0000')
+            .setDescription('**Channel Deleted: #' + channel.name + '**')
+            .setTimestamp()
+            .setAuthor({name: channel.guild.name})
+            .setFooter({text: 'ID: ' + channel.id})
+        log_channel.send({embeds: [embed]})
+    }
+})
+
+client.on('channelUpdate', async (oldChannel, newChannel) => {
+    if (newChannel.guild !== undefined) {
+        const old_name = oldChannel.name;
+        const new_name = newChannel.name;
+
+        if (old_name !== new_name) {
+            const embed = new MessageEmbed()
+                .setColor('#ffa500')
+                .setDescription('**Channel Name Updated: #' + old_name + ' > #' + new_name + '**')
+                .setTimestamp()
+                .setAuthor({name: newChannel.guild.name})
+                .setFooter({text: 'ID: ' + newChannel.id})
+            log_channel.send({embeds: [embed]})
+        }
+    }
+})
 // invites
 client.on('inviteCreate', async invite => {
     invites.get(invite.guild.id).set(invite.code, invite.uses);
