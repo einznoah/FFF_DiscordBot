@@ -182,7 +182,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
     if (oldMember.avatar !== newMember.avatar) {
         const embed = new MessageEmbed()
             .setColor('#ffa000')
-            .setDescription('**<@' + newMember.user.id + '> avatar changed**')
+            .setDescription('**<@' + newMember.user.id + '> server avatar changed**')
             .setAuthor({name: author.username + '#' + author.discriminator, iconURL: author.avatarURL()})
             .setTimestamp()
             .setFooter({text: 'ID: ' + author.id})
@@ -301,6 +301,35 @@ client.on('guildBanRemove', async unban => {
         .setFooter({text: 'ID: ' + user.id})
         .setThumbnail(user.avatarURL())
     log_channel.send({embeds: [embed]});
+})
+
+// users
+client.on('userUpdate', async (oldUser, newUser) => {
+    const oldName = oldUser.username;
+    const newName = newUser.username;
+    const oldAvatar = oldUser.avatar;
+    const newAvatar = newUser.avatar;
+    if (oldName !== newName) {
+        const embed = new MessageEmbed()
+            .setColor('#ffa500')
+            .setDescription('**<@' + newUser.id + '> username changed\nBefore**\n' + oldName + '\n**After**\n' + newName)
+            .setTimestamp()
+            .setAuthor({name: newUser.username + '#' + newUser.discriminator, iconURL: newUser.avatarURL()})
+            .setTimestamp()
+            .setFooter({text: 'ID: ' + newUser.id})
+        log_channel.send({embeds: [embed]});
+    }
+    if (oldAvatar !== newAvatar) {
+        const embed = new MessageEmbed()
+            .setColor('#ffa500')
+            .setDescription('**<@' + newUser.id + '> avatar changed**')
+            .setAuthor({name: newUser.username + '#' + newUser.discriminator, iconURL: newUser.avatarURL()})
+            .setTimestamp()
+            .setFooter({text: 'ID: ' + newUser.id})
+            .setThumbnail(newUser.displayAvatarURL())
+        log_channel.send({embeds: [embed]});
+
+    }
 })
 
 // guild roles
