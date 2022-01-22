@@ -401,7 +401,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             .setColor('#90ee90')
             .setDescription('**<@' + newState.member.id + '> joined voice channel <#' + newChannel.id + '>**')
             .setTimestamp()
-            .setAuthor({name: newState.guild.name})
+            .setAuthor({name: newState.member.user.username + '#' + newState.member.user.discriminator, iconURL: newState.member.user.avatarURL()})
             .setFooter({text: 'ID: ' + newState.id})
         log_channel.send({embeds: [embed]})
     }
@@ -410,7 +410,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             .setColor('#ff0000')
             .setDescription('**<@' + oldState.member.id + '> left voice channel <#' + oldChannel.id + '>**')
             .setTimestamp()
-            .setAuthor({name: oldState.guild.name})
+            .setAuthor({name: newState.member.user.username + '#' + newState.member.user.discriminator, iconURL: newState.member.user.avatarURL()})
             .setFooter({text: 'ID: ' + oldState.id})
         log_channel.send({embeds: [embed]})
     }
@@ -419,7 +419,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             .setColor('#ffa500')
             .setDescription('**<@' + newState.member.id + '>switched voice channel: <#' + oldChannel.id + '> > <#' + newChannel.id + '>**')
             .setTimestamp()
-            .setAuthor({name: newState.guild.name})
+            .setAuthor({name: newState.member.user.username + '#' + newState.member.user.discriminator, iconURL: newState.member.user.avatarURL()})
             .setFooter({text: 'ID: ' + newState.id})
         log_channel.send({embeds: [embed]})
     }
