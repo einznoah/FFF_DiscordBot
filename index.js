@@ -1,11 +1,23 @@
-const {Client, Intents, MessageEmbed} = require('discord.js');
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_VOICE_STATES]})
 const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
+const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const damn_counter = require('nconf');
 damn_counter.file({file: './damn_counter.json'});
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
 const wait = require("timers/promises").setTimeout;
+
+// Discord
+const {Client, Intents, MessageEmbed, Collection} = require('discord.js');
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_VOICE_STATES]})
+
+// Command handler
+client.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.data.name, command);
+}
+
 const invites = new Map();
 let log_channel;
 let guild;
@@ -23,49 +35,13 @@ client.on('ready', async () => {
 // interactions
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-
-    if (interaction.commandName === 'ping') {
-        await interaction.reply('Pong!');
-    } else if (interaction.commandName === 'damncounter') {
-        const user = interaction.options.getUser('user');
-        damn_counter.load();
-        const counter = damn_counter.get('user:' + user.id);
-        if (counter !== undefined) {
-            await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
-        } else {
-            await interaction.reply(user.username + " hasn't said damn yet!")
-        }
-
-    } else if (interaction.commandName === 'topdamn') {
-        damn_counter.load();
-        const users = JSON.stringify(damn_counter.get('user'))
-        let user_dict = {};
-        for (let user in JSON.parse(users)) {
-            user_dict[user] = damn_counter.get('user:' + user);
-        }
-        let items = Object.keys(user_dict).map(function (key) {
-            return [key, user_dict[key]]
-        });
-        items.sort(function (first, second) {
-            return second[1] - first[1];
-        });
-        const top_5 = items.slice(0, 5);
-        let msg = '';
-        let i1 = 0;
-        await top_5.forEach(value => {
-            interaction.guild.members.fetch(value[0])
-                .then(value1 => {
-                    i1++;
-                    if (damn_counter.get('user:' + value1.user.id).toString() === '0') return
-                    const line = i1.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
-                    msg += line + '\n';
-                })
-                .catch((err) => {
-                    msg = 'An error occurred, please contact the bot developer! '
-                    console.log(err)
-                })
-        })
-        await interaction.reply(msg)
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.log(error);
+        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
 });
 
