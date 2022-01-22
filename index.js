@@ -220,7 +220,7 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
             log_channel.send({embeds: [embed]});
         } else if (old_roles_ids > new_roles_ids) {
             function findRemovedRole(id) {
-                for (let i = 0; i < new_roles_ids; i++) {
+                for (let i = 0; i < new_roles_ids.length; i++) {
                     if (id === new_roles_ids[i]) {
                         return false;
                     }
