@@ -1,5 +1,5 @@
 const {Client, Intents, MessageEmbed} = require('discord.js');
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS]})
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_VOICE_STATES]})
 const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
 const PasteClient = require('pastebin-api').default;
 const damn_counter = require('nconf');
@@ -391,6 +391,40 @@ client.on('channelUpdate', async (oldChannel, newChannel) => {
         }
     }
 })
+
+// voice channels
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    const oldChannel = oldState.channel;
+    const newChannel = newState.channel;
+    if (oldChannel === null) {
+        const embed = new MessageEmbed()
+            .setColor('#90ee90')
+            .setDescription('**<@' + newState.member.id + '> joined voice channel <#' + newChannel.id + '>**')
+            .setTimestamp()
+            .setAuthor({name: newState.guild.name})
+            .setFooter({text: 'ID: ' + newState.id})
+        log_channel.send({embeds: [embed]})
+    }
+    if (newChannel === null) {
+        const embed = new MessageEmbed()
+            .setColor('#ff0000')
+            .setDescription('**<@' + oldState.member.id + '> left voice channel <#' + oldChannel.id + '>**')
+            .setTimestamp()
+            .setAuthor({name: oldState.guild.name})
+            .setFooter({text: 'ID: ' + oldState.id})
+        log_channel.send({embeds: [embed]})
+    }
+    if (oldChannel !== null && newChannel !== null) {
+        const embed = new MessageEmbed()
+            .setColor('#ffa500')
+            .setDescription('**<@' + newState.member.id + '>switched voice channel: <#' + oldChannel.id + '> > <#' + newChannel.id + '>**')
+            .setTimestamp()
+            .setAuthor({name: newState.guild.name})
+            .setFooter({text: 'ID: ' + newState.id})
+        log_channel.send({embeds: [embed]})
+    }
+})
+
 // invites
 client.on('inviteCreate', async invite => {
     invites.get(invite.guild.id).set(invite.code, invite.uses);
