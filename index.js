@@ -303,6 +303,55 @@ client.on('guildBanRemove', async unban => {
     log_channel.send({embeds: [embed]});
 })
 
+// guild roles
+client.on('roleCreate', async role => {
+    const name = role.name;
+    const embed = new MessageEmbed()
+        .setColor('#90ee90')
+        .setDescription('**Role Created: ' + name + '**')
+        .setTimestamp()
+        .setAuthor({name: role.guild.name})
+        .setFooter({text: 'ID: ' + role.id})
+    log_channel.send({embeds: [embed]})
+})
+
+client.on('roleDelete', async role => {
+    const name = role.name;
+    const embed = new MessageEmbed()
+        .setColor('#ff0000')
+        .setDescription('**Role Deleted: ' + name + '**')
+        .setTimestamp()
+        .setAuthor({name: role.guild.name})
+        .setFooter({text: 'ID: ' + role.id})
+    log_channel.send({embeds: [embed]})
+})
+
+client.on('roleUpdate', async (oldRole, newRole) => {
+    const old_name = oldRole.name;
+    const new_name = newRole.name;
+    const old_color = oldRole.hexColor;
+    const new_color = newRole.hexColor;
+
+    if (old_name !== new_name) {
+        const embed = new MessageEmbed()
+            .setColor('#ffa500')
+            .setDescription('**Role Name Changed: ' + old_name + ' > ' + new_name + '**')
+            .setTimestamp()
+            .setAuthor({name: newRole.guild.name})
+            .setFooter({text: 'ID: ' + newRole.id})
+        log_channel.send({embeds: [embed]})
+    }
+    if (old_color !== new_color) {
+        const embed = new MessageEmbed()
+            .setColor(new_color)
+            .setDescription('**Role Color Changed: ' + old_color + ' > ' + new_color + '**')
+            .setTimestamp()
+            .setAuthor({name: newRole.guild.name})
+            .setFooter({text: 'ID: ' + newRole.id})
+        log_channel.send({embeds: [embed]})
+    }
+})
+
 // invites
 client.on('inviteCreate', async invite => {
     invites.get(invite.guild.id).set(invite.code, invite.uses);
