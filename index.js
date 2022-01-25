@@ -1,4 +1,4 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
@@ -7,8 +7,8 @@ const wait = require("timers/promises").setTimeout;
 // Redis
 const Redis = require('ioredis');
 const redis = new Redis({
-    port: 9000,
-    host: '127.0.0.1',
+    port: parseInt(REDIS_PORT),
+    host: REDIS_ADDRESS,
     family: 4,
     password: REDIS_PASSWORD,
     db: 0
