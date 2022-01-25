@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@discordjs/rest": "^0.2.0-canary.0"
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "ioredis": "^4.28.3"
   },
   "dependencies": {
     "@discordjs/builders": "^0.11.0",
@@ -18,6 +19,7 @@
     "discord.js": "^13.5.1",
     "nconf": "^0.11.3",
     "pastebin-api": "^2.6.1",
+    "redis": "^4.0.2",
     "timers": "^0.1.1"
   }
 }

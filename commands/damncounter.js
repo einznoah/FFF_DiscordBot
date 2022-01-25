@@ -1,6 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const damn_counter = require("nconf");
-
+const { REDIS_PASSWORD } = require('../config.json');
+const Redis = require('ioredis');
+const redis = new Redis({
+    port: 9000,
+    host: '127.0.0.1',
+    family: 4,
+    password: REDIS_PASSWORD,
+    db: 0
+});
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('damncounter')
@@ -8,12 +15,16 @@ module.exports = {
         .addUserOption((option) => option.setName('user').setDescription('The user to check').setRequired(true)),
     async execute(interaction) {
         const user = interaction.options.getUser('user');
-        damn_counter.load();
-        const counter = damn_counter.get('user:' + user.id);
-        if (counter !== undefined) {
-            await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
-        } else {
+        const counter = await redis.hget('users', user.id)
+        if (counter === undefined || counter === null) {
             await interaction.reply(user.username + " hasn't said damn yet!")
+        } else {
+            if (counter === '1') {
+                await interaction.reply(user.username + " said damn " + counter.toString() + " time!")
+            } else {
+                await interaction.reply(user.username + " said damn " + counter.toString() + " times!")
+            }
+
         }
     },
 };

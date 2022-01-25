@@ -1,17 +1,26 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const damn_counter = require("nconf");
+const { REDIS_PASSWORD } = require('../config.json');
+const Redis = require('ioredis');
+const redis = new Redis({
+    port: 9000,
+    host: '127.0.0.1',
+    family: 4,
+    password: REDIS_PASSWORD,
+    db: 0
+});
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('topdamn')
         .setDescription('See who said damn the most'),
     async execute(interaction) {
-        damn_counter.load();
-        const users = JSON.stringify(damn_counter.get('user'))
         let user_dict = {};
-        for (let user in JSON.parse(users)) {
-            user_dict[user] = damn_counter.get('user:' + user);
-        }
+        await redis.hkeys('users').then(async res => {
+            const array = res.toString().split(',');
+            for (const element of array) {
+                user_dict[element] = await redis.hget('users', element);
+            }
+        });
         let items = Object.keys(user_dict).map(function (key) {
             return [key, user_dict[key]]
         });
@@ -25,8 +34,9 @@ module.exports = {
             interaction.guild.members.fetch(value[0])
                 .then(value1 => {
                     i1++;
-                    if (damn_counter.get('user:' + value1.user.id).toString() === '0') return
-                    const line = i1.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + damn_counter.get('user:' + value1.user.id).toString();
+                    const counter = user_dict[value1.user.id];
+                    if (counter === '0') return;
+                    const line = i1.toString() + '. ' + value1.user.username + '#' + value1.user.discriminator + ' : ' + counter;
                     msg += line + '\n';
                 })
                 .catch((err) => {
@@ -34,6 +44,7 @@ module.exports = {
                     console.log(err)
                 })
         })
+        if (msg === '') msg = 'An error occurred, please contact the bot developer! '
         await interaction.reply(msg)
     },
 };

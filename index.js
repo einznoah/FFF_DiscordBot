@@ -1,10 +1,18 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
-const damn_counter = require('nconf');
-damn_counter.file({file: './damn_counter.json'});
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
 const wait = require("timers/promises").setTimeout;
+
+// Redis
+const Redis = require('ioredis');
+const redis = new Redis({
+    port: 9000,
+    host: '127.0.0.1',
+    family: 4,
+    password: REDIS_PASSWORD,
+    db: 0
+});
 
 // Discord
 const {Client, Intents, MessageEmbed, Collection} = require('discord.js');
@@ -50,13 +58,12 @@ client.on('interactionCreate', async interaction => {
 client.on('messageCreate', async message => {
     if (message.content.toLowerCase().includes('damn')) {
         if (message.author.bot) return;
-        damn_counter.load();
-        let damn_counter_cache = damn_counter.get('user:' + message.author.id);
+        let damn_counter_cache = await redis.hget('users', message.author.id).then();
         if (damn_counter_cache === null || damn_counter_cache === undefined) {
             damn_counter_cache = 0;
         }
-        damn_counter.set('user:' + message.author.id, damn_counter_cache + 1)
-        damn_counter.save()
+        const damn_counter_new = parseInt(damn_counter_cache) + 1;
+        redis.hset('users', message.author.id, damn_counter_new);
     }
 })
 
