@@ -1,12 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT } = require('../config.json');
+const { REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB } = require('../config.json');
 const Redis = require('ioredis');
 const redis = new Redis({
-    port: parseInt(REDIS_PORT),
+    port: REDIS_PORT,
     host: REDIS_ADDRESS,
     family: 4,
     password: REDIS_PASSWORD,
-    db: 0
+    db: REDIS_DB
 });
 
 module.exports = {
