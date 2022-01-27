@@ -427,6 +427,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         log_channel.send({embeds: [embed]})
     }
     if (oldChannel !== null && newChannel !== null) {
+        if (oldChannel === newChannel) return;
         const embed = new MessageEmbed()
             .setColor('#ffa500')
             .setDescription('**<@' + newState.member.id + '>switched voice channel: <#' + oldChannel.id + '> > <#' + newChannel.id + '>**')
