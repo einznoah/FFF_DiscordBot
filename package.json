@@ -15,8 +15,11 @@
   },
   "dependencies": {
     "@discordjs/builders": "^0.11.0",
+    "body-parser": "^1.19.1",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.5.1",
+    "express": "^4.17.2",
+    "express-handlebars": "^6.0.2",
     "nconf": "^0.11.3",
     "pastebin-api": "^2.6.1",
     "redis": "^4.0.2",
