@@ -6,3 +6,9 @@
 /damn_counter.json
 /config_prod.json
 /damn_counter_prod.json
+/ws/ssl/private.key
+/ws/ssl/privkey.pem
+/ws/ssl/fullchain.pem
+/ws/ssl/chain.pem
+/ws/ssl/cert.pem
+/ws/ssl/README

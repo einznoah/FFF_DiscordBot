@@ -4,18 +4,15 @@
 --}}
 <iframe style="display: none" name="dummyframe" id="dummyframe"></iframe>
 
-<!DOCTYPE html>
-
-<html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <title>{{ title }}</title>
-        <link rel="stylesheet" type="text/css" href="css/main.css"/>
-    </head>
-
-    <body>
-        {{{ body }}}
-    </body>
-
-</html>
+<form action="/sendMessage" method="POST" target="dummyframe" >
+    {{!-- Channel selector --}}
+    <label>
+        <input type="text" name="channel id" placeholder="channel id">
+    </label>
+    {{!-- Message text input --}}
+    <label>
+        <input type="text" name="text" placeholder="TEXT">
+    </label>
+    {{!-- Send button --}}
+    <input type="submit" class="button" value="SEND">
+</form>

@@ -1,4 +1,4 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_PORT} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT, WEBSERVER_HTTPS_PORT, SSLprivateKeyPath, SSLcertificatePath} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
@@ -19,7 +19,7 @@ const {Client, Intents, MessageEmbed, Collection} = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_VOICE_STATES]})
 
 // Websocket
-const WS = require('./ws/ws')
+// const WS = require('./ws/ws')
 
 // Command handler
 client.commands = new Collection();
@@ -32,10 +32,9 @@ for (const file of commandFiles) {
 const invites = new Map();
 let log_channel;
 let guild;
-
 client.on('ready', async () => {
     await wait(1000);
-    const ws = new WS(WEBSERVER_PORT, client);
+    // const ws = new WS(WEBSERVER_HTTP_PORT, client);
     console.log(`Logged in as ${client.user.tag}!`);
     log_channel = client.channels.cache.find(channel => channel.id === log_channel_id);
     guild = client.guilds.cache.get(guild_id);
