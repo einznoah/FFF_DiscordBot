@@ -1,4 +1,4 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT, WEBSERVER_HTTPS_PORT, SSLprivateKeyPath, SSLcertificatePath} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
@@ -20,6 +20,10 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 
 // Websocket
 // const WS = require('./ws/ws')
+
+// NSFW Detection
+const NSFWDetector = require('./nsfw_detection/check_image');
+const {ifft} = require("@tensorflow/tfjs-node");
 
 // Command handler
 client.commands = new Collection();
@@ -67,6 +71,16 @@ client.on('messageCreate', async message => {
         }
         const damn_counter_new = parseInt(damn_counter_cache) + 1;
         redis.hset('users', message.author.id, damn_counter_new);
+    }
+    if (message.attachments.size > 0) {
+        message.attachments.forEach(attachment => {
+            const isNSFW = NSFWDetector.isNSFW(attachment.url).then(res => {
+                if (res === 'Hentai' || res === 'Porn') {
+                    message.delete();
+                    message.channel.send('NSFW content detected, message was deleted!')
+                }
+            })
+        })
     }
 })
 
