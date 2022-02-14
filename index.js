@@ -1,4 +1,4 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT, NSFW_CHANNELS} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
@@ -73,15 +73,16 @@ client.on('messageCreate', async message => {
         redis.hset('users', message.author.id, damn_counter_new);
     }
     if (message.attachments.size > 0) {
-        message.attachments.forEach(attachment => {
-            const isNSFW = NSFWDetector.isNSFW(attachment.url).then(res => {
-                if (res === 'Hentai' || res === 'Porn') {
-                    message.delete();
-                    message.channel.send('NSFW content detected, message was deleted!')
-                }
+        if (!message.channel.id in NSFW_CHANNELS) {
+            message.attachments.forEach(attachment => {
+                const isNSFW = NSFWDetector.isNSFW(attachment.url).then(res => {
+                    if (res === 'Hentai' || res === 'Porn') {
+                        message.delete();
+                        message.channel.send('NSFW content detected, message was deleted!')
+                    }
+                })
             })
-        })
-    }
+        }}
 })
 
 client.on('messageDelete', async msgDelete => {
