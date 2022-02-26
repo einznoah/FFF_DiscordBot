@@ -1,30 +1,14 @@
-const {token, log_channel_id, guild_id, PASTEBIN_API_KEY, REDIS_PASSWORD, REDIS_ADDRESS, REDIS_PORT, REDIS_DB, WEBSERVER_HTTP_PORT} = require('./config.json');
+const {token, log_channel_id, guild_id, PASTEBIN_API_KEY} = require('./config.json');
 const fs = require('fs');
 const PasteClient = require('pastebin-api').default;
 const PastebinClient = new PasteClient(PASTEBIN_API_KEY);
 const wait = require("timers/promises").setTimeout;
-
-// Redis
-const Redis = require('ioredis');
-const redis = new Redis({
-    port: REDIS_PORT,
-    host: REDIS_ADDRESS,
-    family: 4,
-    password: REDIS_PASSWORD,
-    db: REDIS_DB
-});
-
 // Discord
 const {Client, Intents, MessageEmbed, Collection} = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_VOICE_STATES]})
 
-// Websocket
-// const WS = require('./ws/ws')
-
 // NSFW Detection
 const NSFWDetector = require('./nsfw_detection/check_image');
-const {ifft} = require("@tensorflow/tfjs-node");
-
 // Command handler
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -38,7 +22,6 @@ let log_channel;
 let guild;
 client.on('ready', async () => {
     await wait(1000);
-    // const ws = new WS(WEBSERVER_HTTP_PORT, client);
     console.log(`Logged in as ${client.user.tag}!`);
     log_channel = client.channels.cache.find(channel => channel.id === log_channel_id);
     guild = client.guilds.cache.get(guild_id);
@@ -63,24 +46,25 @@ client.on('interactionCreate', async interaction => {
 
 // messages
 client.on('messageCreate', async message => {
-    if (message.content.toLowerCase().includes('damn')) {
-        if (message.author.bot) return;
-        let damn_counter_cache = await redis.hget('users', message.author.id).then();
-        if (damn_counter_cache === null || damn_counter_cache === undefined) {
-            damn_counter_cache = 0;
-        }
-        const damn_counter_new = parseInt(damn_counter_cache) + 1;
-        redis.hset('users', message.author.id, damn_counter_new);
+    if (message.content.toLowerCase().includes('https')) {
+        const urlRegex = /(https?:\/\/[^ ]*)/;
+        const url = message.content.match(urlRegex)[1];
+        NSFWDetector.isNSFW(url).then(res => {
+            if (res === 'Hentai' || res === 'Porn') {
+                message.delete();
+                message.channel.send('NSFW content detected, message was deleted!')
+            }
+        });
     }
     if (message.attachments.size > 0) {
         if (!(message.channel.id.toString() === '942810315597414440')) {
             message.attachments.forEach(attachment => {
-                const isNSFW = NSFWDetector.isNSFW(attachment.url).then(res => {
+                NSFWDetector.isNSFW(attachment.url).then(res => {
                     if (res === 'Hentai' || res === 'Porn') {
                         message.delete();
                         message.channel.send('NSFW content detected, message was deleted!')
                     }
-                })
+                });
             })
         }}
 })

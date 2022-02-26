@@ -13,6 +13,7 @@
     "@discordjs/rest": "^0.2.0-canary.0",
     "@tensorflow/tfjs-node": "^3.13.0",
     "axios": "^0.26.0",
+    "cross-fetch": "^3.1.5",
     "helmet": "^5.0.2",
     "ioredis": "^4.28.3"
   },
@@ -27,6 +28,7 @@
     "express-rate-limit": "^6.2.0",
     "hpp": "^0.2.3",
     "nconf": "^0.11.3",
+    "node-fetch": "^3.2.0",
     "nsfwjs": "^2.4.1",
     "pastebin-api": "^2.6.1",
     "redis": "^4.0.2",
