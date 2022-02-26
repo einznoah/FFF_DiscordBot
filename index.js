@@ -47,16 +47,18 @@ client.on('interactionCreate', async interaction => {
 // messages
 client.on('messageCreate', async message => {
     if (message.content.toLowerCase().includes('https')) {
-        const urlRegex = /(https?:\/\/[^ ]*)/;
-        const url = message.content.match(urlRegex)[1];
-        NSFWDetector.isNSFW(url).then(res => {
-            if (res === 'Hentai' || res === 'Porn') {
-                message.delete();
-                message.channel.send('NSFW content detected, message was deleted!').then(msg => {
-                    setTimeout(() => msg.delete(), 10000)
-                });
-            }
-        });
+        if (!(message.channel.id.toString() === '942810315597414440')) {
+            const urlRegex = /(https?:\/\/[^ ]*)/;
+            const url = message.content.match(urlRegex)[1];
+            NSFWDetector.isNSFW(url).then(res => {
+                if (res === 'Hentai' || res === 'Porn') {
+                    message.delete();
+                    message.channel.send('NSFW content detected, message was deleted!').then(msg => {
+                        setTimeout(() => msg.delete(), 10000)
+                    });
+                }
+            });
+        }
     }
     if (message.attachments.size > 0) {
         if (!(message.channel.id.toString() === '942810315597414440')) {
