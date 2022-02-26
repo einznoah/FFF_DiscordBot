@@ -52,7 +52,9 @@ client.on('messageCreate', async message => {
         NSFWDetector.isNSFW(url).then(res => {
             if (res === 'Hentai' || res === 'Porn') {
                 message.delete();
-                message.channel.send('NSFW content detected, message was deleted!')
+                message.channel.send('NSFW content detected, message was deleted!').then(msg => {
+                    setTimeout(() => msg.delete(), 10000)
+                });
             }
         });
     }
@@ -62,12 +64,14 @@ client.on('messageCreate', async message => {
                 NSFWDetector.isNSFW(attachment.url).then(res => {
                     if (res === 'Hentai' || res === 'Porn') {
                         message.delete();
-                        message.channel.send('NSFW content detected, message was deleted!')
+                        message.channel.send('NSFW content detected, message was deleted!').then(msg => {
+                            setTimeout(() => msg.delete(), 10000)
+                        });
                     }
                 });
-            })
+            });
         }}
-})
+});
 
 client.on('messageDelete', async msgDelete => {
     if (msgDelete.author.bot) return;
